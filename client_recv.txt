@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Date: Thu, 08 Aug 2024 04:03:20 GMT
+Server: Apache/2.4.56 (Unix)
+Content-Location: index.html.en
+Vary: negotiate
+TCN: choice
+Last-Modified: Thu, 02 May 2024 21:33:08 GMT
+ETag: "2d-6177f595fcd00"
+Accept-Ranges: bytes
+Content-Length: 45
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/html
+
+<html><body><h1>It works!</h1></body></html>

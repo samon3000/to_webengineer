@@ -1,0 +1,18 @@
+GET / HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+sec-ch-ua: "Not)A;Brand";v="99", "Brave";v="127", "Chromium";v="127"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8
+Sec-GPC: 1
+Accept-Language: ja
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br, zstd
+Cookie: wordpress_test_cookie=WP%20Cookie%20check; wordpress_logged_in_70490311fe7c84acda8886406a6d884b=Shibata%7C1655367360%7CiDMmjSCw2UEkb59Ej8hCA0OMGCkyWKDDTB4gQkJ4dzH%7Cdd861051837f07e855cd0f2c15d859e1eb26de7c61ef5b644b8b444d10c7f69c; tk_ai=woo%3AreIkPfc%2BAOa2XwflIMwTENYG; woocommerce_items_in_cart=1; woocommerce_cart_hash=bf024a69dcb82293f52790a41501b9d7
+
