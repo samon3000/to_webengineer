@@ -7,6 +7,7 @@ class HTTPRequest:
     http_version: str
     body: bytes
     headers: dict = field(default_factory=dict)
+    params: dict = field(default_factory=dict)
 
     # def __init__(
     #         self, path: str = "", method: str = "", http_version: str = "", headers: dict = None, body: bytes = b""

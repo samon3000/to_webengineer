@@ -1,3 +1,9 @@
 __pycache__
 mihon.py
 server_log/*
+client_recv.txt
+client_send.txt
+server_recv00.txt
+server_recv.txt
+webserver_recv.txt
+server_send.txt

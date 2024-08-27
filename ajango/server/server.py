@@ -1,8 +1,8 @@
 import socket
-from workerthread import WorkerThread
+from ajango.server.worker import Worker
 
 
-class WebServer:
+class Server:
     """
     Webサーバーを表すクラス
     """
@@ -25,7 +25,7 @@ class WebServer:
                 print(f"=== Server: クライアントとの接続が完了しました remote_address: {address} ===")
 
                 # クライアントを処理するスレッドを作成
-                thread = WorkerThread(client_socket, address)
+                thread = Worker(client_socket, address)
                 thread.start()
 
         finally:
@@ -45,8 +45,3 @@ class WebServer:
         server_socket.bind(("localhost", 8080))
         server_socket.listen(10)
         return server_socket
-
-
-if __name__ == '__main__':
-    server = WebServer()
-    server.serve()

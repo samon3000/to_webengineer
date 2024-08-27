@@ -1,26 +1,19 @@
 import os
 import re
-import textwrap
 import traceback
-import urllib.parse
 from datetime import datetime
-from pprint import pformat
+from re import Match
 from socket import socket
 from threading import Thread
 from typing import Tuple, Optional
 
-import views
+import settings
 from ajango.http.request import HTTPRequest
 from ajango.http.response import HTTPResponse
 from urls import URL_VIEW
 
 
-class WorkerThread(Thread):
-    # 実行ファイルのあるディレクトリ
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    # 静的配信するファイルを置くディレクトリ
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
+class Worker(Thread):
     # 拡張子とMIME Type
     MIME_TYPES = {
         "html": "text/html; charset=UTF-8",
@@ -65,10 +58,14 @@ class WorkerThread(Thread):
             request = self.parse_http_request(request_bytes)
 
             # pathに対応するviewがあれば関数を呼び出して、リクエストを作成する
-            if request.path in URL_VIEW:
-                view = URL_VIEW[request.path]
-                response = view(request)
-                
+            for url_pattern, view in URL_VIEW.items():
+                match = self.url_match(url_pattern, request.path)
+                if match:
+
+                    request.params.update(match.groupdict())
+                    response = view(request)
+                    break  # elseをキャンセル
+
             # そうでなければ　/static/ からレスポンスを生成する
             else:
                 try:
@@ -106,13 +103,7 @@ class WorkerThread(Thread):
     
     def parse_http_request(self, request: bytes) -> HTTPRequest:
         """
-        HTTPリクエストを
-        1. method: str
-        2. path: str
-        3. http_version: str
-        4. request_header: dict
-        5. request_body: bytes
-        に分割/変換する
+        生のHTTPリクエストをHTTPRequestクラスへ変換する
         """
         # リクエストをパースする
         request_line, remain = request.split(b"\r\n", maxsplit=1)
@@ -125,25 +116,27 @@ class WorkerThread(Thread):
             key, value = re.split(r": *", header_row, maxsplit=1)
             headers[key] = value
 
-        return HTTPRequest(method = method, path = path, http_version = http_version, headers = headers, body = request_body)
+        return HTTPRequest(method=method, path=path, http_version=http_version, headers=headers, body=request_body)
 
     def get_static_file_content(self, path: str) -> bytes:
         """
         リクエストpathから、staticファイルの内容を取得する
         """
+        default_static_root = os.path.join(os.path.dirname(__file__), "../../static")
+        static_root = getattr(settings, "STATIC_ROOT", default_static_root)
 
         # pathの先頭の/を削除し、相対パスにしておく
         relative_path = path.lstrip("/")
-        static_file_path = os.path.join(self.STATIC_ROOT, relative_path)
+        static_file_path = os.path.join(static_root, relative_path)
 
         with open(static_file_path, "rb") as f:
             return f.read()
 
     def build_response_line(self, response:HTTPResponse) ->str:
         # print(response.status_code)
-        status_code = self.STATUS_LINES[response.status_code]
+        status_line = self.STATUS_LINES[response.status_code]
         # print(status_code)
-        return f"HTTP/1.1 {status_code}"
+        return f"HTTP/1.1 {status_line}"
 
     def build_response_header(self, response: HTTPResponse, request: HTTPRequest) -> str:
         """
@@ -170,3 +163,14 @@ class WorkerThread(Thread):
         response_header += f"Content-Type: {response.content_type}\r\n"
 
         return response_header
+    
+    def url_match(self, url_pattern: str, path: str) -> Optional[Match]:
+        print(f"url_pattern: {url_pattern}")
+        print(f"path: {path}")
+        # URLパターンを正規表現パターンに変換する
+        # ex) '/user/<user_id>/profile' => '/user/(?P<user_id>[^/]+)/profile'
+        # user_id をnameとするdictとして、"/"以外の文字列
+        re_pattern = re.sub(r"<(.+?)>", r"(?P<\1>[^/]+)", url_pattern)
+        print(f"re_pattern: {re_pattern}")
+        print(re.match(re_pattern, path))
+        return re.match(re_pattern, path)
