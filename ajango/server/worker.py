@@ -2,15 +2,15 @@ import os
 import re
 import traceback
 from datetime import datetime
-from re import Match
 from socket import socket
 from threading import Thread
-from typing import Tuple, Optional
+from typing import Tuple
 
 import settings
 from ajango.http.request import HTTPRequest
 from ajango.http.response import HTTPResponse
-from urls import URL_VIEW
+from ajango.urls.resolver import URLResolver
+from urls import url_patterns
 
 
 class Worker(Thread):
@@ -57,14 +57,10 @@ class Worker(Thread):
             # リクエストをパースする
             request = self.parse_http_request(request_bytes)
 
-            # pathに対応するviewがあれば関数を呼び出して、リクエストを作成する
-            for url_pattern, view in URL_VIEW.items():
-                match = self.url_match(url_pattern, request.path)
-                if match:
+            view = URLResolver().resolve(request)
 
-                    request.params.update(match.groupdict())
-                    response = view(request)
-                    break  # elseをキャンセル
+            if view:
+                response = view(request)
 
             # そうでなければ　/static/ からレスポンスを生成する
             else:
@@ -132,7 +128,7 @@ class Worker(Thread):
         with open(static_file_path, "rb") as f:
             return f.read()
 
-    def build_response_line(self, response:HTTPResponse) ->str:
+    def build_response_line(self, response: HTTPResponse) -> str:
         # print(response.status_code)
         status_line = self.STATUS_LINES[response.status_code]
         # print(status_code)
@@ -163,14 +159,3 @@ class Worker(Thread):
         response_header += f"Content-Type: {response.content_type}\r\n"
 
         return response_header
-    
-    def url_match(self, url_pattern: str, path: str) -> Optional[Match]:
-        print(f"url_pattern: {url_pattern}")
-        print(f"path: {path}")
-        # URLパターンを正規表現パターンに変換する
-        # ex) '/user/<user_id>/profile' => '/user/(?P<user_id>[^/]+)/profile'
-        # user_id をnameとするdictとして、"/"以外の文字列
-        re_pattern = re.sub(r"<(.+?)>", r"(?P<\1>[^/]+)", url_pattern)
-        print(f"re_pattern: {re_pattern}")
-        print(re.match(re_pattern, path))
-        return re.match(re_pattern, path)
