@@ -3,18 +3,17 @@ import urllib.parse
 from datetime import datetime
 from pprint import pformat
 
+import settings
 from ajango.http.request import HTTPRequest
 from ajango.http.response import HTTPResponse
 
 def now(request: HTTPRequest) -> HTTPResponse:
-# def now() -> Tuple[bytes, Optional[str], str]:
-    html = f"""\
-        <html>
-            <body>
-            <h1>Now: {datetime.now()}</h1>
-            </body>
-        </html>
-    """
+
+    # with open(settings.TEMPLATES_ROOT + "/now.html") as f:
+    #     template = f.read()
+    #     html = template.format(now=datetime.now())
+
+    content = {"now": datetime.now()}
     body = textwrap.dedent(html).encode()
     content_type = "text/html; charset=UTF-8"
     status_code = 200

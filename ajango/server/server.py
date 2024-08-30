@@ -42,6 +42,6 @@ class Server:
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         # socketをlocalhostのポート8080番に割り当てる
-        server_socket.bind(("localhost", 8080))
+        server_socket.bind(("localhost", 8082))
         server_socket.listen(10)
         return server_socket
