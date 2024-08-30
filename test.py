@@ -70,15 +70,20 @@ def opentest():
     # print(os.getcwd())
 
 def basedir():
+    path = os.path.join(settings.TEMPLATES_DIR, "now.html")
+    print(path)
+    print(settings.BASE_DIR)
     print(type(settings.BASE_DIR))
 
 
 
 if __name__ == "__main__":
-    temp_resource = TempResource()
-    kwargs_practice(temp_resource.str, temp_resource.int, **temp_resource.dict)
+
+    # temp_resource = TempResource()
+    # kwargs_practice(temp_resource.str, temp_resource.int, **temp_resource.dict)
+
     # format_practice()
-    # basedir()
+    basedir()
     # opentest()
     # re_practice()
     # dict_practice()

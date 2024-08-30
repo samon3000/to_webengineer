@@ -58,6 +58,9 @@ class Worker(Thread):
 
             response = view(request)
 
+            if isinstance(response.body, str):
+                response.body = response.body.encode()
+            
             response_line = self.build_response_line(response)
             # レスポンスヘッダーを生成
             response_header = self.build_response_header(response, request)
