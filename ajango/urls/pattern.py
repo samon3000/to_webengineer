@@ -17,6 +17,7 @@ class URLPattern:
         # URLパターンを正規表現パターンに変換する
         # ex) '/user/<user_id>/profile' => '/user/(?P<user_id>[^/]+)/profile'
         # user_id をnameとするdictとして、"/"以外の文字列
+        # そうでなければ　self.patternを入れる
         pattern = re.sub(r"<(.+?)>", r"(?P<\1>[^/]+)", self.pattern)
         # print(f"pattern: {pattern}")
         # print(re.match(pattern, path))

@@ -24,7 +24,7 @@ class Worker(Thread):
     STATUS_LINES = {
         200: "200 OK",
         404: "404 Not Found",
-        405: "405 Method Not Allowed"
+        405: "405 Method Not Allowed",
     }
 
     PORT_NUM = 0
@@ -66,7 +66,7 @@ class Worker(Thread):
             response_header = self.build_response_header(response, request)
 
             # レスポンス全体をまとめてBytes型にする
-            response_bytes = (response_line + response_header + "\r\n").encode() + response.body
+            response_bytes = (response_line + "\r\n" + response_header + "\r\n").encode() + response.body
 
             # クライアントへレスポンスを送信する
             self.client_socket.send(response_bytes)
@@ -115,11 +115,12 @@ class Worker(Thread):
             # pathから拡張子を取得
             if "." in request.path:
                 ext = request.path.rsplit(".", maxsplit=1)[-1]
+                # 拡張子からMIME Typeを取得
+                # 知らない対応してない場合はoctet-streatとする
+                response.content_type = self.MIME_TYPES.get(ext, "application/octet-stream")
             else:
-                ext = ""
-            # 拡張子からMIME Typeを取得
-            # 知らない対応してない場合はoctet-streatとする
-            response.content_type = self.MIME_TYPES.get(ext, "application/octet-stream")
+                # pathに拡張子がない場合はhtml扱いとする
+                response.content_type = "text/html; charset=UTF-8"
 
         response_header = ""
         response_header += f"Date: {datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')}\r\n"

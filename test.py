@@ -4,6 +4,7 @@ from datetime import datetime
 
 import settings
 from ajango.server.worker import Worker
+from ajango.http.response import HTTPResponse
 
 
 
@@ -42,6 +43,13 @@ def format_practice():
     # print(article.format(now=datetime.now()))
     
     # print(render(settings.TEMPLATES_ROOT + "/now.html", {"now": datetime.now()}))
+
+def re_match_practice():
+    path = "/nowookji"
+    pathnow = "/now"
+    pattern = r"/now$"
+    print(f"/nowookji  {re.match(pattern, path)}")
+    print(f"/now  {re.match(pattern, pathnow)}")
 
 def render(template_path: str, context: dict):
     with open(template_path) as f:
@@ -83,7 +91,13 @@ if __name__ == "__main__":
     # kwargs_practice(temp_resource.str, temp_resource.int, **temp_resource.dict)
 
     # format_practice()
-    basedir()
+    # basedir()
     # opentest()
     # re_practice()
     # dict_practice()
+
+    # test = HTTPResponse()
+    # print(test.content_type)
+
+    re_match_practice()
+
