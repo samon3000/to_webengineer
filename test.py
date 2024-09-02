@@ -1,6 +1,7 @@
 import re
 import os
 from datetime import datetime
+import random
 
 import settings
 from ajango.server.worker import Worker
@@ -22,6 +23,62 @@ def re_practice():
     # re_pattern = re.sub(r"z(.+?)l", r"(?P<\1>[^/]+)", url_pattern)
     re_pattern = re.sub(r"<(.+?)>", r"(?P<\1>[^/]+)", url_pattern)
     print(re_pattern)
+
+def random_practice():
+    however = ["※ 但し、株主の利益を除く。", "※ 但し、公共の福祉に反しない限り。"]
+    random_num = random.randint(0,8) % len(however)
+    return however[random_num]
+
+def compare_random():
+    sub_regular = [0]*5
+    sub_remainder = [0]*5
+    test_times = 50000
+    for i in range(test_times):
+        first = random.randint(0,4)
+        sub_regular[first] += 1
+        second = random.randint(0,39) % 5
+        sub_remainder[second] += 1
+    # sub_regular = [99980, 100000, 100000, 100000, 100020]
+    # print(sum(sub_regular))
+    # print(sum(sub_remainder))
+    print(".")
+    return [sub_regular, var_score(sub_regular), sub_remainder, var_score(sub_remainder)]
+
+def var_score(score):
+    # 平均
+    mean_score = sum(score) / len(score)
+    # 偏差平方和
+    dev_score = 0
+    for i in score:
+        dev_score += (i - mean_score)**2
+    # 分散
+    var_score = dev_score / len(score)
+
+    return var_score
+
+def multi_compare():
+    var_regulars = []
+    var_rimainders = []
+    for i in range(10):
+        res = compare_random()
+        var_regulars.append(res[1])
+        var_rimainders.append(res[3])
+    mean_var_regular = sum(var_regulars) / len(var_regulars)
+    mean_var_rimainder = sum(var_rimainders) / len(var_rimainders)
+    res = {}
+    res.update({"mean_var_regular": mean_var_regular, "mean_var_rimainder": mean_var_rimainder})
+
+    return res
+
+def multi_print(left=20, right= 15, **res:dict):
+    for name, value in res.items():
+        if value != str:
+            value = "{:.2f}".format(value)
+        print(f"{name.ljust(left)}{value}")
+
+
+
+
 
 def ttt():
     return "ttt"
@@ -99,5 +156,12 @@ if __name__ == "__main__":
     # test = HTTPResponse()
     # print(test.content_type)
 
-    re_match_practice()
+    # re_match_practice()
 
+    # print(random_practice())
+    # g = compare_random()
+    # print(f"regular: {g[0]}\nvar: {g[1]}\nremainder: {g[2]}\nvar: {g[3]}")
+
+    g = multi_compare()
+    multi_print(**g)
+    # print(f"\nregular: {g[0]}\nremainder: {g[1]}")
