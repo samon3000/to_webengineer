@@ -60,7 +60,7 @@ def safe(request: HTTPRequest) -> HTTPResponse:
     return HTTPResponse(body=body)
 
 def set_cookie(request: HTTPRequest) -> HTTPResponse:
-    return HTTPResponse(cookiess={"username": "Kato"})
+    return HTTPResponse(cookies={"username": "Kato"})
 
 def login(request: HTTPRequest) -> HTTPResponse:
     if request.method == "GET":

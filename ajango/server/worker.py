@@ -138,12 +138,12 @@ class Worker(Thread):
         response_header += "Connection: Close\r\n"
         response_header += f"Content-Type: {response.content_type}\r\n"
 
-        if response.cookies :
-            for cookie_name, cookie_value in response.cookies.items():
-                response_header += f"Set-Cookie: {cookie_name}={cookie_value}\r\n"
+        # if response.cookies :
+        for cookie_name, cookie_value in response.cookies.items():
+            response_header += f"Set-Cookie: {cookie_name}={cookie_value}\r\n"
 
-        if response.headers :
-            for header_name, header_value in response.headers.items():
-                response_header += f"{header_name}: {header_value}\r\n"
+        # if response.headers :
+        for header_name, header_value in response.headers.items():
+            response_header += f"{header_name}: {header_value}\r\n"
 
         return response_header
