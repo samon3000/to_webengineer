@@ -5,6 +5,7 @@ from socket import socket
 from threading import Thread
 from typing import Tuple
 
+import settings
 from ajango.http.request import HTTPRequest
 from ajango.http.response import HTTPResponse
 from ajango.urls.resolver import URLResolver
@@ -23,6 +24,7 @@ class Worker(Thread):
     # ステータスコードとステータスライン
     STATUS_LINES = {
         200: "200 OK",
+        302: "302 Found",
         404: "404 Not Found",
         405: "405 Method Not Allowed",
     }
@@ -48,7 +50,7 @@ class Worker(Thread):
             request_bytes = self.client_socket.recv(4096)
 
             # クライアントから送られてきたデータをファイルに書き出す
-            with open(f"sandbox/to_webengineer/server_log/webserver_recv{self.PORT_NUM}.txt", "wb") as f:
+            with open(f"{settings.BASE_DIR}/server_log/webserver_recv{self.PORT_NUM}.txt", "wb") as f:
                 f.write(request_bytes)
 
             # リクエストをパースする
@@ -97,7 +99,13 @@ class Worker(Thread):
             key, value = re.split(r": *", header_row, maxsplit=1)
             headers[key] = value
 
-        return HTTPRequest(method=method, path=path, http_version=http_version, headers=headers, body=request_body)
+        cookies = {}
+        if "Cookie" in headers:
+            cookie_strings = headers["Cookie"].split("; ")
+            for cookie_string in cookie_strings:
+                name, value = cookie_string.split("=", maxsplit=1)
+                cookies[name] = value
+        return HTTPRequest(method=method, path=path, http_version=http_version, headers=headers, cookies=cookies, body=request_body)
 
     def build_response_line(self, response: HTTPResponse) -> str:
         # print(response.status_code)
@@ -130,7 +138,12 @@ class Worker(Thread):
         response_header += "Connection: Close\r\n"
         response_header += f"Content-Type: {response.content_type}\r\n"
 
-        # for header_name, header_value in response.headers.items():
-        #     response_heqder += f"{header_name}: {header_value}\r\n"
+        if response.cookies :
+            for cookie_name, cookie_value in response.cookies.items():
+                response_header += f"Set-Cookie: {cookie_name}={cookie_value}\r\n"
+
+        if response.headers :
+            for header_name, header_value in response.headers.items():
+                response_header += f"{header_name}: {header_value}\r\n"
 
         return response_header
