@@ -58,3 +58,31 @@ def safe(request: HTTPRequest) -> HTTPResponse:
     body = render("safe.html", context)
 
     return HTTPResponse(body=body)
+
+def set_cookie(request: HTTPRequest) -> HTTPResponse:
+    return HTTPResponse(cookies={"username": "Kato"})
+
+def login(request: HTTPRequest) -> HTTPResponse:
+    if request.method == "GET":
+        body = render("login.html", {})
+        return HTTPResponse(body=body)
+    elif request.method == "POST":
+        post_params = urllib.parse.parse_qs(request.body.decode())
+        username = post_params["username"][0]
+        email = post_params["email"][0]
+
+        return HTTPResponse(
+            headers={'Location': "/welcome"}, cookies={"username": username, "email": email}, status_code=302
+        )
+
+def welcome(request: HTTPRequest) -> HTTPResponse:
+    
+    # print(request.cookies)
+    if "username" not in request.cookies:
+        return HTTPResponse(status_code=302, headers={"Location": "/login"})
+
+    username = request.cookies["username"]
+    email = request.cookies["email"]    
+    body = render("welcome.html", {"username": username, "email": email})
+
+    return HTTPResponse(body=body)
