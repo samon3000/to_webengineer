@@ -4,6 +4,7 @@ from pprint import pformat
 import random
 
 
+from ajango.http.cookie import Cookie
 from ajango.http.request import HTTPRequest
 from ajango.http.response import HTTPResponse
 from templates.render import render
@@ -60,7 +61,7 @@ def safe(request: HTTPRequest) -> HTTPResponse:
     return HTTPResponse(body=body)
 
 def set_cookie(request: HTTPRequest) -> HTTPResponse:
-    return HTTPResponse(cookies={"username": "Kato"})
+    return HTTPResponse(cookies=[Cookie(name="username", value="Kato")])
 
 def login(request: HTTPRequest) -> HTTPResponse:
     if request.method == "GET":
@@ -71,8 +72,13 @@ def login(request: HTTPRequest) -> HTTPResponse:
         username = post_params["username"][0]
         email = post_params["email"][0]
 
+        cookies = [
+            Cookie(name="username", value=username, max_age=30),
+            Cookie(name="email", value=email, max_age=30),
+        ]
+
         return HTTPResponse(
-            headers={'Location': "/welcome"}, cookies={"username": username, "email": email}, status_code=302
+            headers={'Location': "/welcome"}, cookies=cookies, status_code=302
         )
 
 def welcome(request: HTTPRequest) -> HTTPResponse:

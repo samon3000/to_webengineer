@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from ajango.http.cookie import Cookie
 
 @dataclass
 class HTTPRequest:
@@ -6,6 +7,7 @@ class HTTPRequest:
     method: str
     http_version: str
     body: bytes
+    cookies: list[Cookie] = field(default_factory=dict)
     cookies: dict = field(default_factory=dict)
     headers: dict = field(default_factory=dict)
     params: dict = field(default_factory=dict)
